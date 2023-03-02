@@ -19,3 +19,18 @@ class Product(models.Model):
     
     def __str__(self):
         return self.name
+    
+class Customer(models.Model):
+    name = models.CharField('Имя пользователя', max_length=50)
+    phone = models.IntegerField('Номер телефона',)
+    email = models.EmailField('Email')
+
+    def __str__(self):
+        return self.name
+
+class Cart(models.Model):
+    customer = models.ForeignKey('Customer', on_delete=models.CASCADE)
+
+class ProductCart(models.Model):
+    product = models.ManyToManyField('Product')
+    cart = models.ManyToManyField('Cart')

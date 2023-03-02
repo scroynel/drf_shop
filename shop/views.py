@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from rest_framework import viewsets, generics
 from rest_framework.views import APIView
-from .models import Product
-from .serializers import ProductsListSerializer, ProductDetailSerializer
+from .models import Product, ProductCart
+from .serializers import ProductsListSerializer, ProductDetailSerializer, CartSerializer
 from rest_framework.response import Response
+from rest_framework import permissions
 
 # -------- ViewSet
 
@@ -36,20 +37,28 @@ from rest_framework.response import Response
 
 # -------- generics
 
-class ProductsList(generics.ListAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductsListSerializer
+# class ProductsList(generics.ListAPIView):
+#     queryset = Product.objects.all()
+#     serializer_class = ProductsListSerializer
 
 
-class ProductsDetailList(generics.RetrieveAPIView):
-    lookup_field = 'slug'
-    queryset = Product.objects.all()
-    serializer_class = ProductDetailSerializer
+# class ProductsDetailList(generics.RetrieveAPIView):
+#     lookup_field = 'slug'
+#     queryset = Product.objects.all()
+#     serializer_class = ProductDetailSerializer
 
 
 # -------- ReadOnlyModelViewSet (list, retrieve)
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
+    lookup_field = 'slug'
+    permission_classes = [permissions.IsAuthenticated, ]
     queryset = Product.objects.all()
-    serializer_class = ProductsListSerializer
+    serializer_class = ProductDetailSerializer
+
+class CartProducts(viewsets.ViewSet):
+    def list(self, request):
+        queryset = ProductCart.objects.all()
+        serializer = CartSerializer(queryset, many=True)
+        return Response(serializer.data)
     
